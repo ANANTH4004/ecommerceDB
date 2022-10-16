@@ -1,0 +1,32 @@
+﻿@*@{
+        ViewBag.Title = "Index";
+    }
+
+    <h2>Index</h2>*@
+@model IEnumerable<ecommerceDB.Models.Products1>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Laptops</h2>
+<div class="col-lg-2 col-md-2 col-sm-2">
+    <h3 style="color:#808080; font-family:'Arial Rounded MT';text-align:center"> <span class="btn btn-info">@Html.ActionLink("View My Cart", "ViewMyCart", "Laptop")</span></h3>
+</div>
+
+<div class="row" style="margin-bottom:100px;">
+    @if (Model != null)
+    {
+        foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-4" style="height:200px;margin-top:100px">
+
+                <img class="img img-responsive cimg" src="@Url.Content(item.img)" style=" height:80%;width:90% ;border-radius:50px 50px 50px 50px" />
+                <h4 style="color:#808080; font-family:'Arial Rounded MT';text-align:center">@item.prodName</h4>
+                <h4 style="color:#808080; font-size:small; font-family:'Arial Rounded MT';text-align:center">@item.price Rs</h4>
+                <h4 style="color: #808080; font-family:'Arial Rounded MT'; text-align: center"> <span class="btn btn-success">@Html.ActionLink("Add To Cart", "AddToCart", new { id = @item.prodId })</span></h4>
+            </div>
+        }
+    }
+</div>
+
