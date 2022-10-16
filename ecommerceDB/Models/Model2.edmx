@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="EcommerceDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="EcommerceDBModel1.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="LoginDetails">
           <Key>
             <PropertyRef Name="id" />
@@ -68,7 +68,7 @@
           <Parameter Name="p_id" Type="int" Mode="In" />
           <Parameter Name="p_prodId" Type="int" Mode="In" />
         </Function>
-        <EntityContainer Name="EcommerceDBModelStoreContainer">
+        <EntityContainer Name="EcommerceDBModel1StoreContainer">
           <EntitySet Name="LoginDetails" EntityType="Self.LoginDetails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderProduct" EntityType="Self.OrderProduct" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
@@ -82,10 +82,11 @@
             <End Role="OrderProduct" EntitySet="OrderProduct" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="EcommerceDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="EcommerceDBModel1" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="LoginDetail">
           <Key>
             <PropertyRef Name="id" />
@@ -93,17 +94,26 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="userId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Orders" Relationship="EcommerceDBModel.LoginDetailOrder" FromRole="LoginDetail" ToRole="Order" />
+          <NavigationProperty Name="Orders" Relationship="Self.FK_LoginDetailOrder" FromRole="LoginDetails" ToRole="Orders" />
+        </EntityType>
+        <EntityType Name="OrderProduct">
+          <Key>
+            <PropertyRef Name="Orders_Id" />
+            <PropertyRef Name="Products1_prodId" />
+          </Key>
+          <Property Name="Orders_Id" Type="Int32" Nullable="false" />
+          <Property Name="Products1_prodId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Products1" Relationship="Self.FK_OrderProduct_Products1" FromRole="OrderProduct" ToRole="Products1" />
         </EntityType>
         <EntityType Name="Order">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="LoginDetail_userId1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LoginDetail_id" Type="Int32" />
           <Property Name="amount" Type="Double" Nullable="false" />
-          <NavigationProperty Name="Products1" Relationship="Self.OrderProduct" FromRole="Orders" ToRole="Products1" />
-          <NavigationProperty Name="LoginDetail" Relationship="EcommerceDBModel.LoginDetailOrder" FromRole="Order" ToRole="LoginDetail" />
-          <Property Name="LoginDetail_userId1" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="LoginDetail" Relationship="Self.FK_LoginDetailOrder" FromRole="Orders" ToRole="LoginDetails" />
         </EntityType>
         <EntityType Name="Products1">
           <Key>
@@ -114,91 +124,98 @@
           <Property Name="desc" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="price" Type="Double" Nullable="false" />
           <Property Name="img" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Orders" Relationship="Self.OrderProduct" FromRole="Products1" ToRole="Orders" />
+          <NavigationProperty Name="OrderProducts" Relationship="Self.FK_OrderProduct_Products1" FromRole="Products1" ToRole="OrderProduct" />
         </EntityType>
-        <Association Name="OrderProduct">
+        <Association Name="FK_LoginDetailOrder">
+          <End Role="LoginDetails" Type="Self.LoginDetail" Multiplicity="0..1" />
           <End Role="Orders" Type="Self.Order" Multiplicity="*" />
-          <End Role="Products1" Type="Self.Products1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LoginDetails">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="LoginDetail_id" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="EcommerceDBEntities" annotation:LazyLoadingEnabled="true">
+        <Association Name="FK_OrderProduct_Products1">
+          <End Role="Products1" Type="Self.Products1" Multiplicity="1" />
+          <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products1">
+              <PropertyRef Name="prodId" />
+            </Principal>
+            <Dependent Role="OrderProduct">
+              <PropertyRef Name="Products1_prodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="EcommerceDBEntities1" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="LoginDetails" EntityType="Self.LoginDetail" />
+          <EntitySet Name="OrderProducts" EntityType="Self.OrderProduct" />
           <EntitySet Name="Orders" EntityType="Self.Order" />
           <EntitySet Name="Products1" EntityType="Self.Products1" />
-          <AssociationSet Name="OrderProduct" Association="Self.OrderProduct">
+          <AssociationSet Name="FK_LoginDetailOrder" Association="Self.FK_LoginDetailOrder">
+            <End Role="LoginDetails" EntitySet="LoginDetails" />
             <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderProduct_Products1" Association="Self.FK_OrderProduct_Products1">
             <End Role="Products1" EntitySet="Products1" />
+            <End Role="OrderProduct" EntitySet="OrderProducts" />
           </AssociationSet>
           <FunctionImport Name="orderDetails">
             <Parameter Name="p_id" Mode="In" Type="Int32" />
             <Parameter Name="p_prodId" Mode="In" Type="Int32" />
           </FunctionImport>
-          <AssociationSet Name="LoginDetailOrder" Association="EcommerceDBModel.LoginDetailOrder">
-            <End Role="LoginDetail" EntitySet="LoginDetails" />
-            <End Role="Order" EntitySet="Orders" />
-          </AssociationSet>
-          <FunctionImport Name="orderDetails1">
-            <Parameter Name="p_id" Mode="In" Type="Int32" />
-            <Parameter Name="p_prodId" Mode="In" Type="Int32" />
-          </FunctionImport>
         </EntityContainer>
-        <Association Name="LoginDetailOrder">
-          <End Type="EcommerceDBModel.LoginDetail" Role="LoginDetail" Multiplicity="1" />
-          <End Type="EcommerceDBModel.Order" Role="Order" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LoginDetail">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Order">
-              <PropertyRef Name="LoginDetail_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-  <EntityContainerMapping StorageEntityContainer="EcommerceDBModelStoreContainer" CdmEntityContainer="EcommerceDBEntities">
-    <EntitySetMapping Name="LoginDetails">
-      <EntityTypeMapping TypeName="IsTypeOf(EcommerceDBModel.LoginDetail)">
-        <MappingFragment StoreEntitySet="LoginDetails">
-          <ScalarProperty Name="id" ColumnName="id" />
-          <ScalarProperty Name="userId" ColumnName="userId" />
-          <ScalarProperty Name="password" ColumnName="password" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="Orders">
-      <EntityTypeMapping TypeName="IsTypeOf(EcommerceDBModel.Order)">
-        <MappingFragment StoreEntitySet="Orders">
-          <ScalarProperty Name="LoginDetail_userId1" ColumnName="LoginDetail_userId1" />
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="EcommerceDBModel1StoreContainer" CdmEntityContainer="EcommerceDBEntities1">
+          <EntitySetMapping Name="LoginDetails">
+            <EntityTypeMapping TypeName="EcommerceDBModel1.LoginDetail">
+              <MappingFragment StoreEntitySet="LoginDetails">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="password" ColumnName="password" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderProducts">
+            <EntityTypeMapping TypeName="EcommerceDBModel1.OrderProduct">
+              <MappingFragment StoreEntitySet="OrderProduct">
+                <ScalarProperty Name="Orders_Id" ColumnName="Orders_Id" />
+                <ScalarProperty Name="Products1_prodId" ColumnName="Products1_prodId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="EcommerceDBModel1.Order">
+              <MappingFragment StoreEntitySet="Orders">
                 <ScalarProperty Name="Id" ColumnName="Id" />
-          <ScalarProperty Name="amount" ColumnName="amount" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="Products1">
-      <EntityTypeMapping TypeName="IsTypeOf(EcommerceDBModel.Products1)">
-        <MappingFragment StoreEntitySet="Products1">
-          <ScalarProperty Name="prodId" ColumnName="prodId" />
-          <ScalarProperty Name="prodName" ColumnName="prodName" />
-          <ScalarProperty Name="desc" ColumnName="desc" />
-          <ScalarProperty Name="price" ColumnName="price" />
-          <ScalarProperty Name="img" ColumnName="img" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <AssociationSetMapping Name="OrderProduct" TypeName="EcommerceDBModel.OrderProduct" StoreEntitySet="OrderProduct">
-      <EndProperty Name="Orders">
-        <ScalarProperty Name="Id" ColumnName="Orders_Id" />
-      </EndProperty>
-      <EndProperty Name="Products1">
-        <ScalarProperty Name="prodId" ColumnName="Products1_prodId" />
-      </EndProperty>
-    </AssociationSetMapping>
-          <FunctionImportMapping FunctionImportName="orderDetails1" FunctionName="EcommerceDBModel.Store.orderDetails" />
-  </EntityContainerMapping>
-</Mapping></edmx:Mappings>
+                <ScalarProperty Name="LoginDetail_userId1" ColumnName="LoginDetail_userId1" />
+                <ScalarProperty Name="LoginDetail_id" ColumnName="LoginDetail_id" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Products1">
+            <EntityTypeMapping TypeName="EcommerceDBModel1.Products1">
+              <MappingFragment StoreEntitySet="Products1">
+                <ScalarProperty Name="prodId" ColumnName="prodId" />
+                <ScalarProperty Name="prodName" ColumnName="prodName" />
+                <ScalarProperty Name="desc" ColumnName="desc" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="img" ColumnName="img" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="orderDetails" FunctionName="EcommerceDBModel1.Store.orderDetails" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
@@ -212,7 +229,7 @@
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
-        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>

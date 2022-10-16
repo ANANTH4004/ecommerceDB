@@ -1,0 +1,59 @@
+﻿@*@{
+        ViewBag.Title = "ViewMyCart";
+    }
+
+    <h2>ViewMyCart</h2>*@
+
+@model IEnumerable<ecommerceDB.Models.MyCart>
+
+@{
+    ViewBag.Title = "ViewMyCart";
+}
+
+<h2>My Cart</h2>
+<div class="col-lg-2 col-md-2 col-sm-2">
+    <h3 style="color:#808080; font-family:'Arial Rounded MT';text-align:center"> <span class="btn btn-info">@Html.ActionLink("Check Out", "CheckOut", "Laptop")</span></h3>
+</div>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.productid)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.productname)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.qty)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.bill)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.productid)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.productname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.qty)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.bill)
+            </td>
+
+        </tr>
+    }
+
+</table>

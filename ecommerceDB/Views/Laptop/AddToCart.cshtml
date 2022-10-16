@@ -1,0 +1,33 @@
+﻿@*@{
+        ViewBag.Title = "AddToCart";
+    }
+
+    <h2>AddToCart</h2>*@
+
+@model ecommerceDB.Models.Products1
+@{
+    ViewBag.Title = "Cart";
+}
+
+<h2>My Cart</h2>
+<br />
+<br />
+<br />
+@using (@Html.BeginForm())
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4">
+                <img style="min-height:200px; width:200px;" src="@Url.Content(Model.img)" />
+            </div>
+            <div class="col-lg-8 col-md-8 col-sm-8">
+                <h1>Product Name: @Model.prodName</h1>
+                <h2>Price: @Model.price PKR</h2>
+                <h6>Description: @Model.desc</h6>
+                <input type="number" name="qty" value="0" id="qty" />
+                <input type="submit" value="Submit" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+
+}
